@@ -1,3 +1,5 @@
+using Dal;
+
 namespace Api;
 
 public class Program
@@ -6,6 +8,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         //builder.Services.AddLogic()
+        builder.Services.AddDal(builder.Configuration.GetConnectionString("DefaultConnection"));
 
         builder.Services.AddCors(options =>
         {
@@ -18,10 +21,16 @@ public class Program
             });
         });
 
-
         var app = builder.Build();
 
         app.MapGet("/", () => "Hello World!");
+
+        //if (app.Environment.IsDevelopment())
+        //{
+        //    app.UseDeveloperExceptionPage();
+        //    app.UseSwagger();
+        //    app.UseSwaggerUI();
+        //}
 
         app.Run();
     }

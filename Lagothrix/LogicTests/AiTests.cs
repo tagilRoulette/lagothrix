@@ -42,7 +42,8 @@ public class AiTests
 
         // Assert
         request.ShouldSatisfyAllConditions(
-            request => reply = request.ShouldNotThrowAsync(),
+            request => request.ShouldNotThrowAsync(),
+            request => reply = request.GetAwaiter().GetResult(),
             request =>
             {
                 realDeltaLower = Math.Abs(reply.LowerLimit - given.expected.LowerLimit);
