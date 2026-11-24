@@ -1,4 +1,5 @@
 ﻿using Logic;
+using Logic.Models;
 using Logic.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

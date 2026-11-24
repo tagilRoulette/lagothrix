@@ -1,6 +1,6 @@
 ﻿namespace Logic.Services.Interfaces;
 
-public interface IAIAssistantService
+public interface IAiAssistantService
 {
-    public Task<PriceFork> GetPriceRecommendation(LotModel lot, CancellationToken cancellationToken);
+    public Task<decimal> GetPriceRecommendationAsync(EstimationRequest lot, CancellationToken cancellationToken);
 }

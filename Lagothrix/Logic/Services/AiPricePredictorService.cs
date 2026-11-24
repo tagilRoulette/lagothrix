@@ -1,4 +1,5 @@
 ﻿using System.ClientModel;
+using Logic.Models;
 using Logic.Services.Interfaces;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
@@ -6,7 +7,7 @@ using OpenAI;
 
 namespace Logic.Services;
 
-public class AiPricePredictorService : IAIAssistantService
+public class AiPricePredictorService : IAiAssistantService
 {
     public readonly IChatClient ChatClient;
     private readonly IConfigurationRoot _secrets;
@@ -35,13 +36,13 @@ public class AiPricePredictorService : IAIAssistantService
             .AsIChatClient();
     }
 
-    public async Task<PriceFork> GetPriceRecommendation(
+    public async Task<decimal> GetPriceRecommendation(
         LotModel lot,
         CancellationToken cancellationToken)
     {
-        List<ChatMessage> chatHistory = [new ChatMessage(ChatRole.System, _briefing)];
+        ICollection<ChatMessage> chatHistory = [new ChatMessage(ChatRole.System, _briefing)];
         chatHistory.Add(new(ChatRole.User, lot.ToString()));
-        var chatResponse = await ChatClient.GetResponseAsync<PriceFork>(chatHistory, cancellationToken: cancellationToken);
+        var chatResponse = await ChatClient.GetResponseAsync<decimal>(chatHistory, cancellationToken: cancellationToken);
         return chatResponse.Result;
     }
 
