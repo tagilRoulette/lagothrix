@@ -1,4 +1,6 @@
-﻿using Api.DTOs.Category.Response;
+﻿using Api.DtoHandlers.Interfaces;
+using Api.DTOs.Category.Response;
+using Api.DTOs.Lot.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;

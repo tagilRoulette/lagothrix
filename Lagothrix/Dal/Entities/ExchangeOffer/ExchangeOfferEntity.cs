@@ -1,5 +1,4 @@
-﻿using Dal.Entities;
-using Dal.Entities.Lot;
+﻿using Dal.Entities.Lot;
 
 namespace Dal.Entities.ExchangeOffer;
 public class ExchangeOfferEntity

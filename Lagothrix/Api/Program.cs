@@ -1,6 +1,9 @@
 using Dal;
+using Dal.Entities;
 using Logic;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Api.DtoHandlers;
 
 namespace Api;
 
@@ -12,12 +15,15 @@ public class Program
         builder.Services.AddOptions();
         builder.Services
             .Configure<UploadConfig>(
-                builder.Build().Configuration.GetSection("FileSavePath")
+                builder.Configuration.GetSection("FileSavePath")
                 );
+        builder.Services.Configure<IdentityOptions>(options => options.User.RequireUniqueEmail = true);
 
-        //builder.Services.AddLogic()
+        builder.Services.AddDtoHandlers();
+        builder.Services.AddLogic();
         builder.Services.AddDal(builder.Configuration.GetConnectionString("DefaultConnection"));
         builder.Services.AddControllers();
+        builder.Services.AddSwaggerGen();
 
         builder.Services.AddCors(options =>
         {
@@ -30,16 +36,26 @@ public class Program
             });
         });
 
+        builder.Services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie();
+        builder.Services.AddAuthorization();
+        builder.Services.AddDataProtection();
+
         var app = builder.Build();
 
-        app.MapGet("/", () => "Hello World!");
+        app.MapControllers();
+        app.UseRouting();
 
-        //if (app.Environment.IsDevelopment())
-        //{
-        //    app.UseDeveloperExceptionPage();
-        //    app.UseSwagger();
-        //    app.UseSwaggerUI();
-        //}
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
 
         app.Run();
     }

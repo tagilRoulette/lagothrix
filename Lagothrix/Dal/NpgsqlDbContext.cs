@@ -2,27 +2,26 @@
 using Dal.Entities.ExchangeOffer;
 using Dal.Entities.Lot;
 using Dal.Entities.LotImage;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dal;
-public class NpgsqlDbContext : DbContext
+public class NpgsqlDbContext : IdentityDbContext<UserEntity, IdentityRole<Guid>, Guid>
 {
     public NpgsqlDbContext(DbContextOptions<NpgsqlDbContext> options) : base(options) { }
-    public DbSet<ExchangeOfferEntity> ExchangeOfferEntity => Set<ExchangeOfferEntity>();
-    public DbSet<LotImageEntity> LotImageEntity => Set<LotImageEntity>();
-    public DbSet<LotEntity> LotEntity => Set<LotEntity>();
-    public DbSet<ParameterEntity> ParameterEntity => Set<ParameterEntity>();
-    public DbSet<AiEstimatedValueEntity> AiEstimatesEntity => Set<AiEstimatedValueEntity>();
-    public DbSet<CategoryEntity> CategoryEntity => Set<CategoryEntity>();
-    public DbSet<ParameterValueEntity> ParameterValueEntity => Set<ParameterValueEntity>();
-    public DbSet<UserEntity> UserEntity => Set<UserEntity>();
+    public DbSet<ExchangeOfferEntity> ExchangeOffers => Set<ExchangeOfferEntity>();
+    public DbSet<LotImageEntity> LotImages => Set<LotImageEntity>();
+    public DbSet<LotEntity> Lots => Set<LotEntity>();
+    public DbSet<ParameterEntity> Parameters => Set<ParameterEntity>();
+    public DbSet<AiEstimatedValueEntity> AiEstimates => Set<AiEstimatedValueEntity>();
+    public DbSet<CategoryEntity> Categories => Set<CategoryEntity>();
+    public DbSet<ParameterValueEntity> ParameterValues => Set<ParameterValueEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<UserEntity>(entity =>
         {
-            entity.HasKey(x => x.Id);
-
             entity.HasMany(x => x.Lots)
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId)
@@ -38,19 +37,10 @@ public class NpgsqlDbContext : DbContext
             .HasForeignKey(x => x.SenderId)
             .OnDelete(DeleteBehavior.Cascade);
 
-            entity.Property(x => x.Name)
-            .HasMaxLength(200)
-            .IsRequired();
-
             entity.Property(x => x.Email)
-            .HasMaxLength(255)
             .IsRequired();
 
-            entity.Property(x => x.PasswordHash)
-            .IsRequired();
-
-            entity.Property(x => x.CreatedAt)
-            .HasConversion(x => x.ToUniversalTime(), x => x)
+            entity.Property(x => x.UserName)
             .IsRequired();
         });
 

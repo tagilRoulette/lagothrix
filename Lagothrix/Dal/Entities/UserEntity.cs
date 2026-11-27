@@ -1,14 +1,11 @@
 ﻿using Dal.Entities.ExchangeOffer;
 using Dal.Entities.Lot;
+using Microsoft.AspNetCore.Identity;
 
 namespace Dal.Entities;
 
-public class UserEntity
+public class UserEntity : IdentityUser<Guid>
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
-    public string PasswordHash { get; set; }
     public DateTime CreatedAt { get; set; }
 
     public ICollection<LotEntity> Lots { get; set; } = [];

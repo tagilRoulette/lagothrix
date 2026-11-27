@@ -40,7 +40,7 @@ public class LotsController : Controller
 
     private static IEnumerable<LotEntity> GetLotsWithAppliedRequestParameters(GetAllLotsRequest request, NpgsqlDbContext context)
     {
-        IEnumerable<LotEntity> lots = context.LotEntity;
+        IEnumerable<LotEntity> lots = context.Lots;
         if (request.CategoryId != null)
             lots = lots.Where(lot => lot.CategoryId == request.CategoryId);
         if (request.LotType != null)
@@ -81,7 +81,7 @@ public class LotsController : Controller
         CancellationToken cancellationToken
         )
     {
-        LotEntity? lot = await _context.LotEntity.FindAsync([id], cancellationToken: cancellationToken);
+        LotEntity? lot = await _context.Lots.FindAsync([id], cancellationToken: cancellationToken);
         if (lot == null) return NotFound();
         return Ok(lot);
     }
@@ -106,7 +106,7 @@ public class LotsController : Controller
             Status = LotStatus.Draft,
         };
 
-        var categoryName = (await _context.CategoryEntity.FindAsync([request.CategoryId], cancellationToken)).Name;
+        var categoryName = (await _context.Categories.FindAsync([request.CategoryId], cancellationToken)).Name;
         var aiEstimatedValue = await _assistantService.GetPriceRecommendationAsync(
             new EstimationRequest(
                 request.Title,
@@ -122,7 +122,7 @@ public class LotsController : Controller
             LotId = lot.Id,
             Lot = lot
         };
-        _context.AiEstimatesEntity.Add(estimatedValueEntity);
+        _context.AiEstimates.Add(estimatedValueEntity);
         lot.AiEstimatedValue = estimatedValueEntity;
 
         return Ok(lot);
@@ -136,7 +136,7 @@ public class LotsController : Controller
         CancellationToken cancellationToken
         )
     {
-        if ((await _context.CategoryEntity.FindAsync([request.CategoryId], cancellationToken)) is not CategoryEntity category)
+        if ((await _context.Categories.FindAsync([request.CategoryId], cancellationToken)) is not CategoryEntity category)
             return NotFound(request.CategoryId);
         string categoryName = category.Name;
         LotEntity newLot = new()
@@ -152,7 +152,7 @@ public class LotsController : Controller
             CreatedAt = DateTime.UtcNow,
             Status = LotStatus.Active,
         };
-        var lot = await _context.LotEntity.FindAsync([id], cancellationToken);
+        var lot = await _context.Lots.FindAsync([id], cancellationToken);
         if (lot == null) return NotFound(id);
 
         var newAiEstimatedValue = await _assistantService.GetPriceRecommendationAsync(
@@ -164,9 +164,9 @@ public class LotsController : Controller
             ), cancellationToken);
 
         lot.AiEstimatedValue.EstimatedValue = newAiEstimatedValue;
-        _context.AiEstimatesEntity.Update(lot.AiEstimatedValue);
+        _context.AiEstimates.Update(lot.AiEstimatedValue);
         newLot.AiEstimatedValue = lot.AiEstimatedValue;
-        _context.LotEntity.Update(newLot);
+        _context.Lots.Update(newLot);
 
         return Ok(newLot);
     }
@@ -178,9 +178,9 @@ public class LotsController : Controller
         CancellationToken cancellationToken
         )
     {
-        var lot = await _context.LotEntity.FindAsync([id], cancellationToken);
+        var lot = await _context.Lots.FindAsync([id], cancellationToken);
         if (lot == null) return NotFound();
-        _context.LotEntity.Remove(lot);
+        _context.Lots.Remove(lot);
         return Ok(lot);
     }
 
@@ -191,10 +191,10 @@ public class LotsController : Controller
         CancellationToken cancellationToken
         )
     {
-        var lot = await _context.LotEntity.FindAsync([id], cancellationToken);
+        var lot = await _context.Lots.FindAsync([id], cancellationToken);
         if (lot == null) return NotFound(id);
         lot.Status = LotStatus.Active;
-        _context.LotEntity.Update(lot);
+        _context.Lots.Update(lot);
         return Ok(lot);
     }
 }

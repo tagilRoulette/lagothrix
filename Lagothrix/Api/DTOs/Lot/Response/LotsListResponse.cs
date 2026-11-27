@@ -1,6 +1,4 @@
-﻿using Api.DTOs.Lot.Response;
-
-namespace Api;
+﻿namespace Api.DTOs.Lot.Response;
 
 public record LotsListResponse
 {

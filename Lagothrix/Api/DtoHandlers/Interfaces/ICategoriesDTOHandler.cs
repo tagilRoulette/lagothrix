@@ -1,6 +1,7 @@
 ﻿using Api.DTOs.Category.Response;
+using Api.DTOs.Lot.Response;
 
-namespace Api;
+namespace Api.DtoHandlers.Interfaces;
 
 public interface ICategoriesDTOHandler
 {

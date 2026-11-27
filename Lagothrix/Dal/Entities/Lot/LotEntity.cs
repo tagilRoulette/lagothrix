@@ -1,5 +1,4 @@
-﻿using Dal.Entities;
-using Dal.Entities.ExchangeOffer;
+﻿using Dal.Entities.ExchangeOffer;
 using Dal.Entities.LotImage;
 
 namespace Dal.Entities.Lot;
@@ -8,8 +7,8 @@ public class LotEntity
     public Guid Id { get; set; }
     public string Title { get; set; }
     public string? Description { get; set; }
-    public LotType Type {  get; set; }
-    public decimal? EstimatedValue {  get; set; }
+    public LotType Type { get; set; }
+    public decimal? EstimatedValue { get; set; }
     public string? DesiredExchange { get; set; }
     public LotStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }

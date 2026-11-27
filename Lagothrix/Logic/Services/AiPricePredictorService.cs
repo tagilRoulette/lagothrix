@@ -1,5 +1,4 @@
 ﻿using System.ClientModel;
-using Logic.Models;
 using Logic.Services.Interfaces;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +9,6 @@ namespace Logic.Services;
 public class AiPricePredictorService : IAiAssistantService
 {
     public readonly IChatClient ChatClient;
-    private readonly IConfigurationRoot _secrets;
     private readonly string _modelName;
     private readonly string _APIkey;
     private const string _endpointUri = "https://openrouter.ai/api/v1";
@@ -21,13 +19,11 @@ public class AiPricePredictorService : IAiAssistantService
         product/service in RUB.
         """;
 
-    public AiPricePredictorService()
+    public AiPricePredictorService(IConfiguration config)
     {
-        _secrets = new ConfigurationBuilder()
-            .AddUserSecrets<AiPricePredictorService>()
-            .Build();
-        _modelName = _secrets["OpenRouterAIModel"]!;
-        _APIkey = _secrets["OpenRouterPriceRecommender"]!;
+        // get secrets
+        _modelName = config["OpenRouterAIModel"]!;
+        _APIkey = config["OpenRouterPriceRecommender"]!;
 
         ApiKeyCredential credential = new(_APIkey);
         OpenAIClientOptions options = new() { Endpoint = new Uri(_endpointUri) };
@@ -36,8 +32,8 @@ public class AiPricePredictorService : IAiAssistantService
             .AsIChatClient();
     }
 
-    public async Task<decimal> GetPriceRecommendation(
-        LotModel lot,
+    public async Task<decimal> GetPriceRecommendationAsync(
+        EstimationRequest lot,
         CancellationToken cancellationToken)
     {
         ICollection<ChatMessage> chatHistory = [new ChatMessage(ChatRole.System, _briefing)];

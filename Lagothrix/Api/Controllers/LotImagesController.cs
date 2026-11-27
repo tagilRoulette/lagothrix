@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using Dal;
-using Dal.Entities.Lot;
 using Dal.Entities.LotImage;
 using Logic;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +28,7 @@ public class LotImagesController : Controller
         )
     {
         var paths = await Task.Run(() => _context.
-            LotImageEntity
+            LotImages
             .Where(x => x.LotId == lotId)
             .Select(x => x.Url));
         if (!paths.Any()) return NotFound();
@@ -41,24 +40,24 @@ public class LotImagesController : Controller
     [Route("/api/lot/{lotId:guid}/images")]
     public async Task<IActionResult> AddByLotIdAsync(
         [FromRoute] Guid lotId,
-        [FromForm] IFormFileCollection images,
+        IFormFileCollection images,
         CancellationToken cancellationToken
         )
     {
-        var findLotTask = _context.LotEntity.FindAsync([lotId], cancellationToken);
+        var findLotTask = _context.Lots.FindAsync([lotId], cancellationToken);
         var imagesUploadInfo = UploadFilesAsync(images, cancellationToken);
-        var imageEntitesCount = _context.LotImageEntity.Count(img => img.LotId == lotId);
+        var imageEntitesCount = _context.LotImages.Count(img => img.LotId == lotId);
         var lot = await findLotTask;
 
         var imageEntities = imagesUploadInfo
-            .Select((path, i) => new LotImageEntity(
-                Guid.NewGuid(),
-                path,
-                imageEntitesCount + i,
-                lot!,
-                lotId
-            ));
-        await _context.LotImageEntity.AddRangeAsync(
+            .Select((path, i) => new LotImageEntity() {
+                Id = Guid.NewGuid(),
+                Url = path,
+                SortOrder = imageEntitesCount + i,
+                Lot = lot!,
+                LotId = lotId
+            });
+        await _context.LotImages.AddRangeAsync(
             imageEntities.ToBlockingEnumerable(cancellationToken),
             cancellationToken);
         return NoContent();
@@ -68,15 +67,15 @@ public class LotImagesController : Controller
     [Route("/api/images/{id:guid}")]
     public async Task<IActionResult> ChangeImageAsync(
         [FromRoute] Guid id,
-        [FromForm] IFormFile image,
+        IFormFile image,
         CancellationToken cancellationToken
         )
     {
-        var imageEntity = await _context.LotImageEntity.FindAsync([id], cancellationToken);
+        var imageEntity = await _context.LotImages.FindAsync([id], cancellationToken);
         if (imageEntity == null) return NotFound();
         var path = await UploadFilesAsync([image], cancellationToken).SingleAsync();
         imageEntity.Url = path;
-        _context.LotImageEntity.Update(imageEntity);
+        _context.LotImages.Update(imageEntity);
         return Ok(imageEntity);
     }
 
@@ -87,9 +86,9 @@ public class LotImagesController : Controller
         CancellationToken cancellationToken
         )
     {
-        var image = await _context.LotImageEntity.FindAsync([id], cancellationToken);
+        var image = await _context.LotImages.FindAsync([id], cancellationToken);
         if (image == null) return NotFound();
-        _context.LotImageEntity.Remove(image);
+        _context.LotImages.Remove(image);
         return Ok(image);
     }
 
@@ -100,8 +99,8 @@ public class LotImagesController : Controller
         CancellationToken cancellationToken
         )
     {
-        _context.LotImageEntity.RemoveRange(
-            _context.LotImageEntity.Where(x => x.LotId == lotId)
+        _context.LotImages.RemoveRange(
+            _context.LotImages.Where(x => x.LotId == lotId)
             );
         return NoContent();
     }
@@ -132,7 +131,7 @@ public class LotImagesController : Controller
             .ToHashSet();
         return files
             .Select(file => (file, file.FileName.Split('.')))
-            .Where(imageInfo => imageInfo.Item2.Length > 1 
+            .Where(imageInfo => imageInfo.Item2.Length > 1
                 && supportedFormats.Contains(imageInfo.Item2[^1]))
             .Select(fileInfo => fileInfo.file);
     }

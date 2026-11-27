@@ -1,4 +1,5 @@
-﻿using Api.DTOs.Category.Response;
+﻿using Api.DtoHandlers.Interfaces;
+using Api.DTOs.Category.Response;
 using Api.DTOs.Lot.Response;
 using Logic.Services.Interfaces;
 
@@ -18,7 +19,7 @@ public class CategoriesDTOHandler : ICategoriesDTOHandler
         var categories = (await _categoriesService
             .GetAllAsync(cancellationToken))
             .Select(category => new CategoryResponse(category.Id, category.Name));
-        return new([..categories]);
+        return new([.. categories]);
     }
 
     public async Task<LotsListResponse> GetLotsByCategoryIdAsync(Guid id, CancellationToken cancellationToken)
@@ -36,9 +37,9 @@ public class CategoriesDTOHandler : ICategoriesDTOHandler
                 lot.CreatedAt,
                 lot.PublishedAt,
                 lot.AiEstimatedValue ?? 0,
-                lot.OwnerId,
-                lot.CategoryId
+                lot.Owner.Id,
+                lot.Category.Id
             ));
-        return new([..lotsListResponse]);
+        return new([.. lotsListResponse]);
     }
 }

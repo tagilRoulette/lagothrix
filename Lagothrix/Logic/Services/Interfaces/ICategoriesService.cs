@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Logic.Models;
+﻿using Logic.Models;
 
 namespace Logic.Services.Interfaces;
 public interface ICategoriesService

@@ -22,7 +22,7 @@ namespace Dal.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Dal.AiEstimatedValueEntity", b =>
+            modelBuilder.Entity("Dal.Entities.AiEstimatedValueEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,10 +42,10 @@ namespace Dal.Migrations
                     b.HasIndex("LotId")
                         .IsUnique();
 
-                    b.ToTable("AiEstimatesEntity");
+                    b.ToTable("AiEstimates");
                 });
 
-            modelBuilder.Entity("Dal.CategoryEntity", b =>
+            modelBuilder.Entity("Dal.Entities.CategoryEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,10 +57,10 @@ namespace Dal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CategoryEntity");
+                    b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Dal.ExchangeOffer.ExchangeOfferEntity", b =>
+            modelBuilder.Entity("Dal.Entities.ExchangeOffer.ExchangeOfferEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -97,10 +97,10 @@ namespace Dal.Migrations
 
                     b.HasIndex("TargetLotId");
 
-                    b.ToTable("ExchangeOfferEntity");
+                    b.ToTable("ExchangeOffers");
                 });
 
-            modelBuilder.Entity("Dal.Lot.LotEntity", b =>
+            modelBuilder.Entity("Dal.Entities.Lot.LotEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,10 +146,10 @@ namespace Dal.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("LotEntity");
+                    b.ToTable("Lots");
                 });
 
-            modelBuilder.Entity("Dal.LotImage.LotImageEntity", b =>
+            modelBuilder.Entity("Dal.Entities.LotImage.LotImageEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -169,10 +169,10 @@ namespace Dal.Migrations
 
                     b.HasIndex("LotId");
 
-                    b.ToTable("LotImageEntity");
+                    b.ToTable("LotImages");
                 });
 
-            modelBuilder.Entity("Dal.ParameterEntity", b =>
+            modelBuilder.Entity("Dal.Entities.ParameterEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,10 +184,10 @@ namespace Dal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ParameterEntity");
+                    b.ToTable("Parameters");
                 });
 
-            modelBuilder.Entity("Dal.ParameterValueEntity", b =>
+            modelBuilder.Entity("Dal.Entities.ParameterValueEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -204,35 +204,77 @@ namespace Dal.Migrations
 
                     b.HasIndex("ParameterId");
 
-                    b.ToTable("ParameterValueEntity");
+                    b.ToTable("ParameterValues");
                 });
 
-            modelBuilder.Entity("Dal.UserEntity", b =>
+            modelBuilder.Entity("Dal.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserEntity");
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("LotEntityParameterEntity", b =>
@@ -250,38 +292,172 @@ namespace Dal.Migrations
                     b.ToTable("LotEntityParameterEntity");
                 });
 
-            modelBuilder.Entity("Dal.AiEstimatedValueEntity", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
-                    b.HasOne("Dal.Lot.LotEntity", "Lot")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Dal.Entities.AiEstimatedValueEntity", b =>
+                {
+                    b.HasOne("Dal.Entities.Lot.LotEntity", "Lot")
                         .WithOne("AiEstimatedValue")
-                        .HasForeignKey("Dal.AiEstimatedValueEntity", "LotId")
+                        .HasForeignKey("Dal.Entities.AiEstimatedValueEntity", "LotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Lot");
                 });
 
-            modelBuilder.Entity("Dal.ExchangeOffer.ExchangeOfferEntity", b =>
+            modelBuilder.Entity("Dal.Entities.ExchangeOffer.ExchangeOfferEntity", b =>
                 {
-                    b.HasOne("Dal.Lot.LotEntity", "OfferLot")
+                    b.HasOne("Dal.Entities.Lot.LotEntity", "OfferLot")
                         .WithMany("TargetedOffers")
                         .HasForeignKey("OfferLotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Dal.UserEntity", "Receiver")
+                    b.HasOne("Dal.Entities.UserEntity", "Receiver")
                         .WithMany("ReceivedOffers")
                         .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Dal.UserEntity", "Sender")
+                    b.HasOne("Dal.Entities.UserEntity", "Sender")
                         .WithMany("SentOffers")
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Dal.Lot.LotEntity", "TargetLot")
+                    b.HasOne("Dal.Entities.Lot.LotEntity", "TargetLot")
                         .WithMany("TargetOffers")
                         .HasForeignKey("TargetLotId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -296,15 +472,15 @@ namespace Dal.Migrations
                     b.Navigation("TargetLot");
                 });
 
-            modelBuilder.Entity("Dal.Lot.LotEntity", b =>
+            modelBuilder.Entity("Dal.Entities.Lot.LotEntity", b =>
                 {
-                    b.HasOne("Dal.CategoryEntity", "Category")
+                    b.HasOne("Dal.Entities.CategoryEntity", "Category")
                         .WithMany("Lots")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Dal.UserEntity", "User")
+                    b.HasOne("Dal.Entities.UserEntity", "User")
                         .WithMany("Lots")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -315,9 +491,9 @@ namespace Dal.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Dal.LotImage.LotImageEntity", b =>
+            modelBuilder.Entity("Dal.Entities.LotImage.LotImageEntity", b =>
                 {
-                    b.HasOne("Dal.Lot.LotEntity", "Lot")
+                    b.HasOne("Dal.Entities.Lot.LotEntity", "Lot")
                         .WithMany("Images")
                         .HasForeignKey("LotId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -326,9 +502,9 @@ namespace Dal.Migrations
                     b.Navigation("Lot");
                 });
 
-            modelBuilder.Entity("Dal.ParameterValueEntity", b =>
+            modelBuilder.Entity("Dal.Entities.ParameterValueEntity", b =>
                 {
-                    b.HasOne("Dal.ParameterEntity", "Parameter")
+                    b.HasOne("Dal.Entities.ParameterEntity", "Parameter")
                         .WithMany("Values")
                         .HasForeignKey("ParameterId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -339,25 +515,76 @@ namespace Dal.Migrations
 
             modelBuilder.Entity("LotEntityParameterEntity", b =>
                 {
-                    b.HasOne("Dal.Lot.LotEntity", null)
+                    b.HasOne("Dal.Entities.Lot.LotEntity", null)
                         .WithMany()
                         .HasForeignKey("LotsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Dal.ParameterEntity", null)
+                    b.HasOne("Dal.Entities.ParameterEntity", null)
                         .WithMany()
                         .HasForeignKey("ParametersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Dal.CategoryEntity", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.HasOne("Dal.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.HasOne("Dal.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Dal.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.HasOne("Dal.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Dal.Entities.CategoryEntity", b =>
                 {
                     b.Navigation("Lots");
                 });
 
-            modelBuilder.Entity("Dal.Lot.LotEntity", b =>
+            modelBuilder.Entity("Dal.Entities.Lot.LotEntity", b =>
                 {
                     b.Navigation("AiEstimatedValue")
                         .IsRequired();
@@ -369,12 +596,12 @@ namespace Dal.Migrations
                     b.Navigation("TargetedOffers");
                 });
 
-            modelBuilder.Entity("Dal.ParameterEntity", b =>
+            modelBuilder.Entity("Dal.Entities.ParameterEntity", b =>
                 {
                     b.Navigation("Values");
                 });
 
-            modelBuilder.Entity("Dal.UserEntity", b =>
+            modelBuilder.Entity("Dal.Entities.UserEntity", b =>
                 {
                     b.Navigation("Lots");
 
